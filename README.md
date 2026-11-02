@@ -45,6 +45,8 @@ GIF created with ...
 Describe any challenges encountered while building the app.
 alot of my code wasnt working at first
 
+
+put a new gif for the updated dashbaord 
 ## License
 
     Copyright [2026] [Chidubem Chidebelu]
