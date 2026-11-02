@@ -1,40 +1,44 @@
 package com.example.bitlife
 
-import android.content.Intent
-import android.os.Bundle
-import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import kotlinx.coroutines.launch
+import android.os.Bundle
+import androidx.fragment.app.Fragment
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
-
-    private val entries = mutableListOf<HealthEntry>()
-    private lateinit var adapter: EntryAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val rvEntries = findViewById<RecyclerView>(R.id.rvEntries)
-        adapter = EntryAdapter(entries)
-        rvEntries.adapter = adapter
-        rvEntries.layoutManager = LinearLayoutManager(this)
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
 
-        val healthDao = (application as BitFitApplication).db.healthDao()
+        val logFragment = LogListFragment()
+        val dashboardFragment = DashboardFragment()
 
-        lifecycleScope.launch {
-            healthDao.getAllEntries().collect { entryList ->
-                adapter.updateData(entryList)
+        // Display LogListFragment by default on launch
+        if (savedInstanceState == null) {
+            replaceFragment(logFragment)
+        }
+
+        bottomNavigationView.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_log -> {
+                    replaceFragment(logFragment)
+                    true
+                }
+                R.id.nav_dashboard -> {
+                    replaceFragment(dashboardFragment)
+                    true
+                }
+                else -> false
             }
         }
+    }
 
-        val btnRecord = findViewById<Button>(R.id.btnRecordEntry)
-        btnRecord.setOnClickListener {
-            val intent = Intent(this, CreateEntryActivity::class.java)
-            startActivity(intent)
-        }
+    private fun replaceFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.nav_host_fragment, fragment)
+            .commit()
     }
 }
